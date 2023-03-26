@@ -110,22 +110,28 @@ void SortFile(int* A, int n,fstream &F, fstream &FA, fstream &FB,fstream &FC, fs
                 }
 
             }
+             FC.open("C:\\FC.txt");
             while (i < step)
             { // переписываем оставшиеся элементы первого пути (если второй кончился раньше)
                 c[k] = A[i];
                 i++; k++;
+                FC << A[i] << "";
             }
+             FD.open("C:\\FD.txt");
             while ((j < (mid + step)) && (j < n))
             {  // переписываем оставшиеся элементы второго пути (если первый кончился раньше)
                 c[k] = A[j];
                 j++; k++;
+                FD << A[j] << "";
             }
             step = step + h; // переходим к следующему этапу
         }
         h = h * 2;
-        // Переносим упорядоченную последовательность (промежуточный вариант) в исходный массив
+        // Переносим упорядоченную последовательность (промежуточный вариант) в исходную последовательность
         for (i = 0; i < n; i++)
             A[i] = c[i];
+         F.open("C:\\F.txt");
+        F << c[i] << "";
     }
     
 
@@ -134,12 +140,11 @@ int main(int* A, int n, fstream& F, fstream& FA, fstream& FB, fstream& FC, fstre
 {
     bool CreateFILE();
     bool createFileWithRandomNumbers(int n, int* A);
-    bool isFileContainsSortedArray(int* A, int n);
-    int Razbienie();
+     int Razbienie();
     void SortFile();
-    return 0;
+   bool isFileContainsSortedArray(int* A, int n);
+ return 0;
 }
-
 
 
 

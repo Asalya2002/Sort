@@ -139,11 +139,44 @@ void SortFile(int* A, int n,fstream &F, fstream &FA, fstream &FB,fstream &FC, fs
 int main(int* A, int n, fstream& F, fstream& FA, fstream& FB, fstream& FC, fstream& FD)
 {
     bool CreateFILE();
-    bool createFileWithRandomNumbers(int n, int* A);
-     int Razbienie();
+    if (F.is_open()) //првоеряем функцию CreateFILE
+    {
+        return true;
+    }
+    
+    if (FA.is_open())
+    {
+        return true;
+    }
+    
+    if (FB.is_open())
+    {
+        return true;
+    }
+    
+    if (FC.is_open())
+    {
+        return true;
+    }
+    
+    if (FD.is_open())
+    {
+        return true;
+    }
+    bool createFileWithRandomNumbers(int n, int* A);  
+    
+    if (!F.is_open() == NULL){
+        return true;}
+    int Razbienie();
+    
+    int mid;
+    if (mid = n / 2)
+    {
+        return true;
+    }
     void SortFile();
-   bool isFileContainsSortedArray(int* A, int n);
- return 0;
+    bool isFileContainsSortedArray(int* A, int n);
+    return 0;
 }
 
 

@@ -1,23 +1,25 @@
 ﻿// Sort.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 #define _CRT_SECURE_NO_WARNING
-#include <stdio.h>
-#include <stdlib.h>
 #include <iostream>
 #include <random>
 #include <fstream>
 
 using namespace std;
-bool createFileWithRandomNumbers(int n, int* mass)
+bool CreateFILE()
 {
-    FILE* fileF, * fileFA, * fileFB, * fileFC, * fileFD;
-    fileFA = fopen("FA.txt", "w");
-    fileFB = fopen("FB.txt", "w");
-    fileFC = fopen("FC.txt", "w");
-    fileFD = fopen("FC.txt", "w");
-    if (!fileFA || !fileFB || !fileFC || !fileFD)
+    //создаем файлы
+    fstream F("C:\\F.txt");
+    fstream FA("C:\\FA.txt");
+    fstream FB("C:\\FB.txt");
+    fstream FC("C:\\FC.txt");
+    fstream FD("C:\\FD.txt");
+    if (!F.is_open() || !FA.is_open() || !FB.is_open() || !FC.is_open() || !FD.is_open())
         return false;
-    if ((fileF = fopen("F.txt", "w+")) == NULL)
+}
+    bool createFileWithRandomNumbers(int n, int* A, fstream &F)
+    {
+    if (F.is_open() == NULL)
     {
         puts("Не удалось открыть файл");
         return true;
@@ -25,56 +27,62 @@ bool createFileWithRandomNumbers(int n, int* mass)
     srand(time(NULL));
     for (int i = 0; i < n; ++i)
     {
-        mass[i++] = rand() % 100 - 50;
-        fwrite(&mass, sizeof(int), 1, fileF);
+        A[i++] = rand() % 100 - 50;
+        F<<A<<"";
     }
-    fcloseall();//закрыть все открытые файлы
+    
     return true;
-}
-bool isFileContainsSortedArray(int* mass, int n)
+    }
+bool isFileContainsSortedArray(int* A, int n, fstream &F)
 {
     int i;
-    FILE* fileF = fopen("F.txt", "rt");
-    fscanf(fileF, "%d", &n); // Пробуем прочитать с начала
+    if (F.is_open() == NULL)
+    {
+        puts("Не удалось открыть файл");
+        return true;
+    }
+    F >> A[i]; // Пробуем прочитать с начала
     for (int i = 0; i < n - 1; i++)
     {
-        if (mass[i] > mass[i + 1])
+        if (A[i] > A[i + 1])
         {
-            cout << "Array is not ordered" << endl;
             return false;
         }
         else
         {
-            cout << "Array is ordered" << endl;
+            return true;
         }
     }
-    fclose(fileF);
-    return true;
+    return isFileContainsSortedArray;
 }
-void SortFile(int* mass, int n)
+int Razbienie(fstream &F, fstream &FA, fstream &FB, int* A, int n)
 {
-    int i;
+    int i = 0;
     if (i % 2 == 0)
     {
     }
     else
     {
     }
-    FILE* fileF = fopen("F", "rt");
-    fscanf(fileF, "%d", &mass); // Пробуем прочитать с начала
-    while (!feof(fileF) && !ferror(fileF)) // Проверяем, прочитали ли
+    F.open("C:\\F.txt");
+    while (!F.eof()) // Проверяем, прочитали ли
     {
-        fscanf(fileF, "%d", &mass); // Пробуем прочитать дальше
+        F >> A[i]; // Пробуем прочитать дальше
     }
-    mass[i];
-    mass[i - 1];
-    int mid = mass[i++] / 2;
+    A[i];
+    A[i - 1];
+    FA.open("C:\\FA.txt");
+    FA << A[i] << "";
+    FB.open("C:\\FB.txt");
+    FB << A[i - 1] << "";
+    return 0;
+}
+void SortFile(int* A, int n,fstream &F, fstream &FA, fstream &FB,fstream &FC, fstream &FD)
+{
+    int mid = n / 2;
     if (n % 2 == 1)
         mid++;
-    FILE* fileFA = fopen("FA", "w");
-    fprintf(fileFA, "%d ", mass[i]);
-    FILE* fileFB = fopen("FB", "w");
-    fprintf(fileFB, "%d ", mass[i - 1]);
+    
     int h = 1; // шаг
     // выделяем память под формируемую последовательность
     int* c = (int*)malloc(n * sizeof(int));
@@ -87,55 +95,52 @@ void SortFile(int* mass, int n)
         int k = 0;   // индекс элемента в результирующей последовательности
         while (step <= mid)
         {
-
             while ((i < step) && (j < n) && (j < (mid + step)))
             { // пока не дошли до конца пути
               // заполняем следующий элемент формируемой последовательности
               // меньшим из двух просматриваемых
-                FILE* fileFC = fopen("FC", "w");
-                if (mass[i] < mass[j])
+                if (A[i] < A[j])
                 {
-                    c[k] = mass[i];
+                    c[k] = A[i];
                     i++; k++;
                 }
                 else {
-                    FILE* fileFD = fopen("FD", "w");
-                    c[k] = mass[j];
+                    c[k] = A[j];
                     j++; k++;
                 }
 
             }
-            FILE* fileFA = fopen("FA", "w");
             while (i < step)
             { // переписываем оставшиеся элементы первого пути (если второй кончился раньше)
-                c[k] = mass[i];
+                c[k] = A[i];
                 i++; k++;
             }
-            FILE* fileFB = fopen("FB", "w");
             while ((j < (mid + step)) && (j < n))
             {  // переписываем оставшиеся элементы второго пути (если первый кончился раньше)
-                c[k] = mass[j];
+                c[k] = A[j];
                 j++; k++;
             }
             step = step + h; // переходим к следующему этапу
         }
         h = h * 2;
         // Переносим упорядоченную последовательность (промежуточный вариант) в исходный массив
-        FILE* fileF = fopen("F", "w");
         for (i = 0; i < n; i++)
-            mass[i] = c[i];
+            A[i] = c[i];
     }
-    fcloseall();//закрыть все открытые файлы
+    
 
 }
-int main()
+int main(int* A, int n, fstream& F, fstream& FA, fstream& FB, fstream& FC, fstream& FD)
 {
-    FILE* fileF, * fileFA, * fileFB, * fileFC, * fileFD;
-    bool createFileWithRandomNumbers(int n, int* mass);
-    bool isFileContainsSortedArray(int* mass, int n);
+    bool CreateFILE();
+    bool createFileWithRandomNumbers(int n, int* A);
+    bool isFileContainsSortedArray(int* A, int n);
+    int Razbienie();
     void SortFile();
-    fcloseall();//закрыть все открытые файлы
     return 0;
 }
+
+
+
 
 

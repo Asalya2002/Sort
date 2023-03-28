@@ -77,7 +77,7 @@ int Razbienie(fstream &F, fstream &FA, fstream &FB, int* A, int n)
     FB << A[i - 1] << "";
     return 0;
 }
-void SortFile(int* A, int n,fstream &F, fstream &FA, fstream &FB,fstream &FC, fstream &FD)
+void Merge(int* A, int n,fstream &F, fstream &FA, fstream &FB,fstream &FC, fstream &FD)
 {
     int mid = n / 2;
     if (n % 2 == 1)
@@ -133,7 +133,25 @@ void SortFile(int* A, int n,fstream &F, fstream &FA, fstream &FB,fstream &FC, fs
          F.open("C:\\F.txt");
         F << c[i] << "";
     }
-    
+    bool SortFIle(int* A, int n, fstream& F)
+{
+    int i;
+    if (!F.is_open())
+    {
+        return false;
+    }
+    F >> A[i];
+    if (!isFileContainsSortedArray)
+    {
+        cout << "Файл не отсортирован" << endl;
+        return false;
+    }
+    else
+    {
+        cout << "Файл  отсортирован" << endl;
+        return true;
+    }
+}
 
 }
 int main(int* A, int n, fstream& F, fstream& FA, fstream& FB, fstream& FC, fstream& FD)
@@ -174,8 +192,9 @@ int main(int* A, int n, fstream& F, fstream& FA, fstream& FB, fstream& FC, fstre
     {
         return true;
     }
-    void SortFile();
+    void Merge();
     bool isFileContainsSortedArray(int* A, int n);
+    bool SortFile(fstream &F);
     return 0;
 }
 

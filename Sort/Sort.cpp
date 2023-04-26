@@ -1,200 +1,178 @@
 ﻿// Sort.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 #define _CRT_SECURE_NO_WARNING
+
+#include <cstdlib>
 #include <iostream>
 #include <random>
 #include <fstream>
-
 using namespace std;
-bool CreateFILE()
+
+bool createFileWithRandomNumbers(fstream &f)//Создаёт файл со случайной последовательностью чисел
 {
-    //создаем файлы
-    fstream F("C:\\F.txt");
-    fstream FA("C:\\FA.txt");
-    fstream FB("C:\\FB.txt");
-    fstream FC("C:\\FC.txt");
-    fstream FD("C:\\FD.txt");
-    if (!F.is_open() || !FA.is_open() || !FB.is_open() || !FC.is_open() || !FD.is_open())
-        return false;
-}
-    bool createFileWithRandomNumbers(int n, int* A, fstream &F)
-    {
-    if (F.is_open() == NULL)
-    {
-        puts("Не удалось открыть файл");
-        return true;
-    }
-    srand(time(NULL));
-    for (int i = 0; i < n; ++i)
-    {
-        A[i++] = rand() % 100 - 50;
-        F<<A<<"";
-    }
-    
-    return true;
-    }
-bool isFileContainsSortedArray(int* A, int n, fstream &F)
-{
-    int i;
-    if (F.is_open() == NULL)
-    {
-        puts("Не удалось открыть файл");
-        return true;
-    }
-    F >> A[i]; // Пробуем прочитать с начала
-    for (int i = 0; i < n - 1; i++)
-    {
-        if (A[i] > A[i + 1])
-        {
-            return false;
-        }
-        else
-        {
-            return true;
+    for (int i = 0; i < 3; i++) { // i - индекс потока
+        if (!f.is_open()) // Если файл не открыт
+            continue; // Пропускаем итерацию
+        int x = rand() % 10;
+        for (int k = 0; k < 10; k++) {
+            f << x << ' ';
+            x = x + rand() % 10;
         }
     }
-    return isFileContainsSortedArray;
+    f.close();
+        return true;
 }
-int Razbienie(fstream &F, fstream &FA, fstream &FB, int* A, int n)
+void Razbienie() 
 {
-    int i = 0;
-    if (i % 2 == 0)
-    {
+    ifstream f("F.txt");
+    fstream fa("FA.txt");
+    fstream fb("FB.txt");
+    int k = 0;
+    int x;
+    while (!f.eof()) {
+        for (int i = 0; i < k; i++)
+        {     
+       //запись в файл fa
+            f >> x;
+                fa << x << "\t";
+        }
+
+        for (int i = 0; i < k; i++) {      //запись в файл fb
+                f >> x;
+            i = i + 1;
+            k = 1 - k;
+           fb << x << "\t";
+        }
     }
-    else
-    {
-    }
-    F.open("C:\\F.txt");
-    while (!F.eof()) // Проверяем, прочитали ли
-    {
-        F >> A[i]; // Пробуем прочитать дальше
-    }
-    A[i];
-    A[i - 1];
-    FA.open("C:\\FA.txt");
-    FA << A[i] << "";
-    FB.open("C:\\FB.txt");
-    FB << A[i - 1] << "";
-    return 0;
+    f.close();
+    fa.close();
+    fb.close();
+
 }
-void Merge(int* A, int n,fstream &F, fstream &FA, fstream &FB,fstream &FC, fstream &FD)
+int Merge(fstream &f,int x)
 {
+    int n;
+    fstream fa("FA.txt");
+    fstream fb("FB.txt");
+    fstream fc("FC.txt");
+    fstream fd("FD.txt");
     int mid = n / 2;
     if (n % 2 == 1)
-        mid++;
-    
+      mid++;
+    Razbienie();
     int h = 1; // шаг
     // выделяем память под формируемую последовательность
-    int* c = (int*)malloc(n * sizeof(int));
+    int c = (int)/*malloc*/(n * sizeof(int));
     int step;
     while (h < n)
     {
         step = h;
-        int i;  // индекс первого пути
-        int j = i - 1; // индекс второго пути
-        int k = 0;   // индекс элемента в результирующей последовательности
+    int i;  // индекс первого пути
+    int j = i - 1; // индекс второго пути
+    int k = 0;   // индекс элемента в результирующей последовательности
         while (step <= mid)
         {
+
             while ((i < step) && (j < n) && (j < (mid + step)))
             { // пока не дошли до конца пути
               // заполняем следующий элемент формируемой последовательности
               // меньшим из двух просматриваемых
-                if (A[i] < A[j])
+               
+                if (i < j)
                 {
-                    c[k] = A[i];
+                    k = i;
                     i++; k++;
                 }
                 else {
-                    c[k] = A[j];
+                   
+                    k = j;
                     j++; k++;
                 }
 
             }
-             FC.open("C:\\FC.txt");
+            fc.open("FC.txt");
             while (i < step)
             { // переписываем оставшиеся элементы первого пути (если второй кончился раньше)
-                c[k] = A[i];
+                k = i;
                 i++; k++;
-                FC << A[i] << "";
             }
-             FD.open("C:\\FD.txt");
+            fd.open("FD.txt");
             while ((j < (mid + step)) && (j < n))
             {  // переписываем оставшиеся элементы второго пути (если первый кончился раньше)
-                c[k] = A[j];
+                k = j;
                 j++; k++;
-                FD << A[j] << "";
             }
             step = step + h; // переходим к следующему этапу
         }
         h = h * 2;
-        // Переносим упорядоченную последовательность (промежуточный вариант) в исходную последовательность
+        // Переносим упорядоченную последовательность (промежуточный вариант) в исходный массив
+        f.open("F.txt");
         for (i = 0; i < n; i++)
-            A[i] = c[i];
-         F.open("C:\\F.txt");
-        F << c[i] << "";
+            x = c;
+        return 0;
     }
-    bool SortFIle(int* A, int n, fstream& F)
+    f.close();
+    fa.close();
+    fb.close();
+    fc.close();
+    fd.close();
+}
+bool isFileContainsSortedArray(fstream &f)
 {
-    int i;
-    if (!F.is_open())
+    if(!createFileWithRandomNumbers(f))
     {
-        return false;
+        -1;
     }
-    F >> A[i];
-    if (!isFileContainsSortedArray)
+    Merge(f,5);
+    if (!isFileContainsSortedArray(f))
     {
-        cout << "Файл не отсортирован" << endl;
-        return false;
+        -2;
     }
-    else
-    {
-        cout << "Файл  отсортирован" << endl;
-        return true;
-    }
+    return 1;
+    f.close();
 }
 
-}
-int main(int* A, int n, fstream& F, fstream& FA, fstream& FB, fstream& FC, fstream& FD)
-{
-    bool CreateFILE();
-    if (F.is_open()) //првоеряем функцию CreateFILE
-    {
-        return true;
+int main()
+{  
+    setlocale(LC_ALL, "Russian");
+    srand(time(0));
+    fstream f("F.txt", ios_base::app | ios_base::in);
+        if (!f) { cout << "Ошибка открытия файла" << endl; return 1; }
+    fstream fa("FA.txt", ios_base::app | ios_base::in);
+        if (!fa) { cout << "Ошибка открытия файла" << endl; return 1; }
+    fstream fb("FB.txt", ios_base::app | ios_base::in);
+    if (!fb) { cout << "Ошибка открытия файла" << endl; return 1; }
+    fstream fc("FC.txt", ios_base::app | ios_base::in);
+    if (!fc) { cout << "Ошибка открытия файла" << endl; return 1; }
+    fstream fd("FD.txt", ios_base::app | ios_base::in);
+    if (!fd) { cout << "Ошибка открытия файла" << endl; return 1; }
+    int n = 0;
+    createFileWithRandomNumbers(f);
+    Razbienie();
+    Merge(f,10);
+    isFileContainsSortedArray(f);
+    for (int i = 0; i < 10; i++) {
+        switch (isFileContainsSortedArray(f)) {
+        case 1:
+            std::cout << "Test passed." << std::endl;
+            break;
+
+        case -1:
+            std::cout << "Test failed: can't create file." << std::endl;
+            break;
+
+        case -2:
+            std::cout << "Test failed: file isn't sorted." << std::endl;
+            break;
+        }
     }
-    
-    if (FA.is_open())
-    {
-        return true;
-    }
-    
-    if (FB.is_open())
-    {
-        return true;
-    }
-    
-    if (FC.is_open())
-    {
-        return true;
-    }
-    
-    if (FD.is_open())
-    {
-        return true;
-    }
-    bool createFileWithRandomNumbers(int n, int* A);  
-    
-    if (!F.is_open() == NULL){
-        return true;}
-    int Razbienie();
-    
-    int mid;
-    if (mid = n / 2)
-    {
-        return true;
-    }
-    void Merge();
-    bool isFileContainsSortedArray(int* A, int n);
-    bool SortFile(fstream &F);
+    //закрыть все открытые файлы
+    f.close();
+    fa.close();
+    fb.close();
+    fc.close();
+    fd.close();
+    system("pause");
     return 0;
 }
 

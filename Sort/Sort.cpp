@@ -8,40 +8,54 @@
 #include <fstream>
 using namespace std;
 
-bool createFileWithRandomNumbers(fstream &f)//Создаёт файл со случайной последовательностью чисел
+bool createFileWithRandomNumbers(fstream &f, const int numbersCount, const int maxNumberValue)//Создаёт файл со случайной последовательностью чисел
 {
     for (int i = 0; i < 3; i++) { // i - индекс потока
         if (!f.is_open()) // Если файл не открыт
             continue; // Пропускаем итерацию
-        int x = rand() % 10;
-        for (int k = 0; k < 10; k++) {
-            f << x << ' ';
-            x = x + rand() % 10;
+        int numbersCount = rand() % maxNumberValue;
+        for (int k = 0; k < maxNumberValue; k++) {
+            f << numbersCount << ' ';
+            numbersCount = numbersCount + rand() % maxNumberValue;
         }
     }
     f.close();
         return true;
 }
-void Razbienie() 
+void Razbienie(fstream &f,const int numbersCount)
 {
-    ifstream f("F.txt");
     fstream fa("FA.txt");
     fstream fb("FB.txt");
-    int k = 0;
-    int x;
-    while (!f.eof()) {
-        for (int i = 0; i < k; i++)
-        {     
-       //запись в файл fa
-            f >> x;
-                fa << x << "\t";
+    /*bool R = true;*/
+    int n;
+    int k = 6;
+    int nb, nc; //счетчики элементов в формируемых группах 
+    int p; //р=1-признак достижения конца исходного файла
+    nb = 0; nc = 0; p = 0;
+    while (f)
+    {
+        if (!f.eof())
+        {
+            p = 1;
+            break;
         }
-
-        for (int i = 0; i < k; i++) {      //запись в файл fb
-                f >> x;
-            i = i + 1;
-            k = 1 - k;
-           fb << x << "\t";
+        else
+        {
+            if (nb < n)
+            {
+                fa << numbersCount << endl;
+                k++;
+                nb++;
+                continue;
+            }
+            else
+            {
+                fb << numbersCount << endl;
+                k++;
+                nb = 0;
+                nc++;
+                break;
+            }
         }
     }
     f.close();
@@ -49,25 +63,20 @@ void Razbienie()
     fb.close();
 
 }
-int Merge(fstream &f,int x)
+int Merge(fstream& f, fstream& fa, fstream& fb, int n,const int numbersCount)
 {
-    int n;
-    fstream fa("FA.txt");
-    fstream fb("FB.txt");
     fstream fc("FC.txt");
     fstream fd("FD.txt");
     int mid = n / 2;
     if (n % 2 == 1)
       mid++;
-    Razbienie();
+   
     int h = 1; // шаг
-    // выделяем память под формируемую последовательность
-    int c = (int)/*malloc*/(n * sizeof(int));
     int step;
     while (h < n)
     {
         step = h;
-    int i;  // индекс первого пути
+    int i=0;  // индекс первого пути
     int j = i - 1; // индекс второго пути
     int k = 0;   // индекс элемента в результирующей последовательности
         while (step <= mid)
@@ -108,7 +117,7 @@ int Merge(fstream &f,int x)
         // Переносим упорядоченную последовательность (промежуточный вариант) в исходный массив
         f.open("F.txt");
         for (i = 0; i < n; i++)
-            x = c;
+            f << numbersCount << endl;
         return 0;
     }
     f.close();
@@ -117,20 +126,35 @@ int Merge(fstream &f,int x)
     fc.close();
     fd.close();
 }
-bool isFileContainsSortedArray(fstream &f)
+bool isFileContainsSortedArray(fstream &f,fstream &fa,fstream &fb,const int numbersCount,const int maxNumberValue) //Проверяет массив в файле на упорядоченность
 {
-    if(!createFileWithRandomNumbers(f))
+    if(!createFileWithRandomNumbers(f, numbersCount,maxNumberValue))
     {
         -1;
     }
-    Merge(f,5);
-    if (!isFileContainsSortedArray(f))
+    Merge(f,fa,fb,5, numbersCount);
+    if (!isFileContainsSortedArray(f,fa,fb,numbersCount, maxNumberValue))
     {
         -2;
     }
     return 1;
     f.close();
 }
+int createAndSortFile(fstream& f,fstream& fa,fstream &fb, const int numbersCount, const int maxNumberValue) //Проверяет работает ли сортировка
+{
+    if (!createFileWithRandomNumbers(f, numbersCount, maxNumberValue)) {
+        return -1;
+    }
+    Razbienie(f,numbersCount);
+    Merge(f,fa,fb,maxNumberValue,numbersCount); //Вызов вашей функции сортировки
+
+    if (!isFileContainsSortedArray(f,fa,fb,numbersCount,maxNumberValue)) {
+        return -2;
+    }
+
+    return 1;
+}
+
 
 int main()
 {  
@@ -146,13 +170,15 @@ int main()
     if (!fc) { cout << "Ошибка открытия файла" << endl; return 1; }
     fstream fd("FD.txt", ios_base::app | ios_base::in);
     if (!fd) { cout << "Ошибка открытия файла" << endl; return 1; }
-    int n = 0;
-    createFileWithRandomNumbers(f);
-    Razbienie();
-    Merge(f,10);
-    isFileContainsSortedArray(f);
+    int n=0;
+    int x;
+    createFileWithRandomNumbers(f,10,10);
+    Razbienie(f,n);
+    Merge(f,fa,fb,n,x);
+    isFileContainsSortedArray(f,fa,fb,10,10);
+    createAndSortFile(f,fa,fb,10,10);
     for (int i = 0; i < 10; i++) {
-        switch (isFileContainsSortedArray(f)) {
+        switch (isFileContainsSortedArray(f,fa,fb,10,10)) {
         case 1:
             std::cout << "Test passed." << std::endl;
             break;
